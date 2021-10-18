@@ -82,7 +82,16 @@ function OffScreenInput({ id, value }: { id: string; value: string }) {
  * MenuItem to query for related input rendered and select and copy its text
  * @param props
  */
-function CopyMenuItem({ id, value }: { id: string; value: string }) {
+function CopyMenuItem({
+  id,
+  value,
+  able,
+}: {
+  id: string;
+  value: string;
+  able: object;
+}) {
+  if (!able) return <div></div>;
   let displayValue = value;
   if (value.length > 30) {
     displayValue = value.substring(0, 30).trim() + '…';
@@ -138,6 +147,7 @@ const cellStyle: React.CSSProperties = {
 interface QueryResultDataTableProps {
   columns: StatementColumn[];
   rows?: StatementResults;
+  isDownload: Boolean;
 }
 
 interface QueryResultDataTableState {
@@ -447,7 +457,7 @@ class QueryResultDataTable extends React.PureComponent<
   };
 
   render() {
-    const { columns, rows } = this.props;
+    const { columns, rows, isDownload } = this.props;
     const {
       cellModalVisible,
       cellColumnName,
@@ -456,7 +466,7 @@ class QueryResultDataTable extends React.PureComponent<
       contextTop,
     } = this.state;
     const { height, width } = this.state.dimensions;
-
+    let noCopy = isDownload ? '' : styles.noCopy;
     if (rows && columns) {
       const rowCount = rows.length;
       // Add extra column to fill remaining grid width if necessary
@@ -465,102 +475,109 @@ class QueryResultDataTable extends React.PureComponent<
       return (
         <Measure bounds onResize={this.handleContainerResize}>
           {({ measureRef }) => (
-            <div
-              ref={measureRef}
-              onContextMenu={this.handleContextMenu}
-              className="h-100 w-100"
-              style={{
-                position: 'absolute',
-              }}
-            >
-              {/*
+            <div className={noCopy}>
+              <div
+                ref={measureRef}
+                onContextMenu={this.handleContextMenu}
+                className="h-100 w-100"
+                style={{
+                  position: 'absolute',
+                }}
+              >
+                {/*
                 Visual hack - On Windows, scrollbar always showing in grid takes up some amount of room on side of content.
                 To account for this, the header width is reduced by scrollbar width.
                 This creates a small space in upper right corner that is unstyled.
                 Visually, we want this to look like a continuation of the header row, so we render a div out of flow, behind the actual header
               */}
-              <div
-                style={{
-                  ...headerCellStyle,
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: 30,
-                }}
-              />
+                <div
+                  style={{
+                    ...headerCellStyle,
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: 30,
+                  }}
+                />
 
-              {/* Input fields for copy-paste value sourcing */}
-              <OffScreenInput id="cell-copy-value" value={cellCopyValue} />
+                {/* Input fields for copy-paste value sourcing */}
+                <OffScreenInput id="cell-copy-value" value={cellCopyValue} />
 
-              <VariableSizeGrid
-                columnCount={columnCount}
-                rowCount={1}
-                columnWidth={this.getColumnWidth}
-                rowHeight={() => 30}
-                height={30}
-                width={width - this.state.scrollbarWidth}
-                ref={this.headerGrid}
-                style={headerStyle}
-              >
-                {this.HeaderCell}
-              </VariableSizeGrid>
-              <VariableSizeGrid
-                style={bodyStyle}
-                columnCount={columnCount}
-                rowCount={rowCount}
-                columnWidth={this.getColumnWidth}
-                rowHeight={this.getRowHeight}
-                width={width}
-                height={height - 30}
-                ref={this.bodyGrid}
-                onScroll={this.handleGridScroll}
-              >
-                {this.Cell}
-              </VariableSizeGrid>
+                <VariableSizeGrid
+                  columnCount={columnCount}
+                  rowCount={1}
+                  columnWidth={this.getColumnWidth}
+                  rowHeight={() => 30}
+                  height={30}
+                  width={width - this.state.scrollbarWidth}
+                  ref={this.headerGrid}
+                  style={headerStyle}
+                >
+                  {this.HeaderCell}
+                </VariableSizeGrid>
+                <VariableSizeGrid
+                  style={bodyStyle}
+                  columnCount={columnCount}
+                  rowCount={rowCount}
+                  columnWidth={this.getColumnWidth}
+                  rowHeight={this.getRowHeight}
+                  width={width}
+                  height={height - 30}
+                  ref={this.bodyGrid}
+                  onScroll={this.handleGridScroll}
+                >
+                  {this.Cell}
+                </VariableSizeGrid>
 
-              {/*
+                {/*
                 This menu is hidden and moves around based on where context-menu click happens
                 This is hacky but works! reach-ui does not expose the menu components
                 in a way that allows them to be used for context menu
               */}
-              <Menu>
-                <MenuButton
-                  id="cell-value-context-menu"
-                  style={{
-                    visibility: 'hidden',
-                    position: 'fixed',
-                    height: 1,
-                    left: contextLeft,
-                    top: contextTop,
-                  }}
-                >
-                  Hidden context menu
-                </MenuButton>
-                <MenuPopover style={{ zIndex: 999999 }}>
-                  <MenuItems>
-                    <CopyMenuItem id="#cell-copy-value" value={cellCopyValue} />
-                    <MenuItem
-                      onSelect={() => {
-                        this.setState({ cellModalVisible: true });
-                      }}
-                    >
-                      View expanded value
-                    </MenuItem>
-                  </MenuItems>
-                </MenuPopover>
-              </Menu>
+                <Menu>
+                  <MenuButton
+                    id="cell-value-context-menu"
+                    style={{
+                      visibility: 'hidden',
+                      position: 'fixed',
+                      height: 1,
+                      left: contextLeft,
+                      top: contextTop,
+                    }}
+                  >
+                    Hidden context menu
+                  </MenuButton>
+                  <MenuPopover style={{ zIndex: 999999 }}>
+                    <MenuItems>
+                      <CopyMenuItem
+                        id="#cell-copy-value"
+                        value={cellCopyValue}
+                        able={isDownload || false}
+                      />
+                      <MenuItem
+                        onSelect={() => {
+                          if (isDownload)
+                            this.setState({ cellModalVisible: true });
+                        }}
+                      >
+                        View expanded value
+                      </MenuItem>
+                    </MenuItems>
+                  </MenuPopover>
+                </Menu>
 
-              <Modal
-                title={cellColumnName}
-                width="fit-content"
-                visible={cellModalVisible}
-                onClose={this.handleCellModalClose}
-              >
-                <pre style={{ fontSize: '14px', color: '#000' }}>
-                  {cellCopyValue}
-                </pre>
-              </Modal>
+                <Modal
+                  title={cellColumnName}
+                  width="fit-content"
+                  visible={cellModalVisible}
+                  onClose={this.handleCellModalClose}
+                >
+                  <pre style={{ fontSize: '14px', color: '#000' }}>
+                    {cellCopyValue}
+                  </pre>
+                </Modal>
+              </div>
             </div>
           )}
         </Measure>

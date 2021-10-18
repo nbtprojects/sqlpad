@@ -10,6 +10,7 @@ import ErrorBlock from './ErrorBlock';
 import InfoBlock from './InfoBlock';
 import QueryResultDataTable from './QueryResultDataTable';
 import QueryResultRunning from './QueryResultRunning';
+import useAppContext from '../utilities/use-app-context';
 
 export interface Props {
   statementId?: string;
@@ -21,6 +22,7 @@ function QueryResultContainer({ statementId }: Props) {
   const status = useStatementStatus(statementId);
   const queryError = useSessionQueryError();
   const { data, error } = api.useStatementResults(statementId, status);
+  const { config } = useAppContext();
 
   if (
     status === 'queued' ||
@@ -47,7 +49,13 @@ function QueryResultContainer({ statementId }: Props) {
       </InfoBlock>
     );
   }
-  return <QueryResultDataTable columns={columns} rows={data} />;
+  return (
+    <QueryResultDataTable
+      isDownload={config?.allowCsvDownload || false}
+      columns={columns}
+      rows={data}
+    />
+  );
 }
 
 export default React.memo(QueryResultContainer);
