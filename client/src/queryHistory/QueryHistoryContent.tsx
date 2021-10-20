@@ -6,6 +6,7 @@ import QueryResultRunning from '../common/QueryResultRunning';
 import { StatementColumn } from '../types';
 import { api } from '../utilities/api';
 import QueryHistoryFilterItem, { Filter } from './QueryHistoryFilterItem';
+import useAppContext from '../utilities/use-app-context';
 
 const COLUMNS: StatementColumn[] = [
   { name: 'userEmail', datatype: 'string', maxLineLength: 20 },
@@ -48,6 +49,8 @@ function QueryHistoryContent() {
     error: queryError,
     mutate,
   } = api.useQueryHistory(filterUrl);
+
+  const { config } = useAppContext();
 
   const arrayRows = useMemo(() => {
     return (historyData || []).map((row) => {
@@ -186,7 +189,11 @@ function QueryHistoryContent() {
         {isRunning && <QueryResultRunning />}
         {queryError && <ErrorBlock>{queryError}</ErrorBlock>}
         {!isRunning && !queryError && historyData && (
-          <QueryResultDataTable columns={COLUMNS} rows={arrayRows} />
+          <QueryResultDataTable
+            columns={COLUMNS}
+            rows={arrayRows}
+            isDownload={config?.allowCsvDownload || false}
+          />
         )}
       </div>
     </>
