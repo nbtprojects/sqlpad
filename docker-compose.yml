@@ -1,0 +1,65 @@
+version: '3.5'
+
+services:
+  db:
+    image: mysql:8.0.31
+    restart: always
+    volumes:
+      - 'data-db:/var/lib/mysql'
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USERNAME=user
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=db
+    ports:
+      - "3306:3306"
+
+  sqlpad:
+    platform: linux/amd64
+    # image: sqlpad/sqlpad:5.6.0
+    build: .
+    volumes:
+      - ./data:/var/lib/sqlpad/
+      # - ./seed-data:/etc/sqlpad/seed-data
+    ports:
+      - "3000:3000"
+    links:
+      - db
+    depends_on:
+      - db
+    hostname: 'sqlpad'
+    environment:
+      SQLPAD_ADMIN: 'admin@sqlpad.com'
+      SQLPAD_ADMIN_PASSWORD: 'admin'
+      SQLPAD_APP_LOG_LEVEL: debug
+      SQLPAD_WEB_LOG_LEVEL: warn
+      #SQLPAD_BACKEND_DB_URI: mariadb://root:password@db:3306/db?timezone=Asia%2FSeoul
+      #SQLPAD_SESSION_STORE: 'database'
+      SQLPAD_DB_PATH: '/var/lib/sqlpad'
+      SQLPAD_DB_IN_MEMORY: 'false'
+      #SQLPAD_QUERY_RESULT_STORE: 'database'
+      # This adds a pre-configured connection to point to the database
+      # used as the backend for SQLPad itself
+      #SQLPAD_CONNECTIONS__mariad__name: 'db'
+      #SQLPAD_CONNECTIONS__mariad__driver: mysql
+      #SQLPAD_CONNECTIONS__mariad__host: db
+      #SQLPAD_CONNECTIONS__mariad__port: 3306
+      #SQLPAD_CONNECTIONS__mariad__database: db
+      #SQLPAD_CONNECTIONS__mariad__username: root
+      #SQLPAD_CONNECTIONS__mariad__password: password
+      # SQLPAD_CONNECTIONS__mariad__multiStatementTransactionEnabled: 'true'
+      # SQLPAD_CONNECTIONS__mariad__idleTimeoutSeconds: 86400
+      # SQLPAD_SEED_DATA_PATH: /etc/sqlpad/seed-data
+    #env_file:
+    #- .env
+
+volumes:
+  data-db:
+    driver: "local"
+
+# networks:
+#   nbtnet:
+#     external: true
+#   networks:
+#     - nbtnet
+
