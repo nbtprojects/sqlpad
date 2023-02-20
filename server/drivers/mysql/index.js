@@ -151,7 +151,11 @@ class Client {
         if (rows.length >= maxRowsPlusOne) {
           return resolve({ rows: rows.slice(0, maxRows), incomplete: true });
         }
-        return resolve({ rows, incomplete: false });
+        return resolve({
+          rows,
+          incomplete: false,
+          affectedRows: rows.affectedRows,
+        });
       });
     });
   }

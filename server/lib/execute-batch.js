@@ -51,13 +51,24 @@ async function executeBatch(config, models, webhooks, batchId) {
       await models.statements.updateStarted(statement.id, statementStartTime);
       queryResult = await connectionClient.runQuery(input);
       stopTime = new Date();
+
+      const affectedRows = queryResult.affectedRows || 0;
+
       await models.statements.updateFinished(
         statement.id,
         queryResult,
         stopTime,
-        stopTime - statementStartTime
+        stopTime - statementStartTime,
+        affectedRows
       );
-      webhooks.statementFinished(user, connection, batch, statement.id);
+
+      webhooks.statementFinished(
+        user,
+        connection,
+        batch,
+        statement.id,
+        affectedRows
+      );
     } catch (error) {
       statementError = error;
       stopTime = new Date();
