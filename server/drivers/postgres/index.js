@@ -104,7 +104,7 @@ class Client {
       resultRows = resultRows.slice(0, maxRows);
     }
 
-    return { rows: resultRows, incomplete };
+    return { rows: resultRows, incomplete, affectedRows: result.rowCount };
   }
 }
 
