@@ -47,6 +47,7 @@ export interface Statement {
   batchId: string;
   sequence: number;
   statementText: string;
+  affectedRows: number;
   status: 'queued' | 'started' | 'finished' | 'error' | 'cancelled';
   executionId?: string;
   startTime?: string | Date;

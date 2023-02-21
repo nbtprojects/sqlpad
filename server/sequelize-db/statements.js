@@ -21,6 +21,7 @@ module.exports = function (sequelize) {
         type: Sequelize.TEXT,
         allowNull: false,
       },
+
       // If a batch errors, any statements following error will be "cancelled" status
       // At this time statements/batches cannot be cancelled otherwise
       status: {
@@ -51,6 +52,9 @@ module.exports = function (sequelize) {
       },
       incomplete: {
         type: Sequelize.BOOLEAN,
+      },
+      affectedRows: {
+        type: Sequelize.INTEGER,
       },
       error: {
         type: Sequelize.JSON,

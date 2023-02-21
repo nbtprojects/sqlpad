@@ -41,6 +41,7 @@ function StatementTableRow({ statement }: { statement: Statement }) {
       </td>
       <td>{statusContent}</td>
       <td style={{ textAlign: 'right' }}>{statement.rowCount}</td>
+      <td style={{ textAlign: 'right' }}>{statement.affectedRows}</td>
       <td style={{ textAlign: 'right' }}>
         {typeof statement.durationMs === 'number'
           ? `${statement.durationMs / 1000}`
@@ -94,6 +95,7 @@ function StatementsTable({ statements }: { statements: Statement[] }) {
             <th className={styles.statementTextColHeader}>Statement</th>
             <th>Status</th>
             <th style={{ textAlign: 'right' }}>Rows</th>
+            <th style={{ textAlign: 'right' }}>AffectedRows</th>
             <th style={{ textAlign: 'right' }}>Seconds</th>
             <th style={{ textAlign: 'right' }}></th>
           </tr>

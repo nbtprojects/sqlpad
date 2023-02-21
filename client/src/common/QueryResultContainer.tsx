@@ -4,6 +4,7 @@ import {
   useStatementColumns,
   useStatementRowCount,
   useStatementStatus,
+  useStatementAffectedRows,
 } from '../stores/editor-store';
 import { api } from '../utilities/api';
 import ErrorBlock from './ErrorBlock';
@@ -20,6 +21,7 @@ function QueryResultContainer({ statementId }: Props) {
   const columns = useStatementColumns(statementId) || [];
   const rowCount = useStatementRowCount(statementId);
   const status = useStatementStatus(statementId);
+  const affectedRows = useStatementAffectedRows(statementId);
   const queryError = useSessionQueryError();
   const { data, error } = api.useStatementResults(statementId, status);
   const { config } = useAppContext();
@@ -46,6 +48,8 @@ function QueryResultContainer({ statementId }: Props) {
         Query finished
         <br />
         No rows returned
+        <br />
+        {affectedRows ? `${affectedRows} rows affected` : ''}
       </InfoBlock>
     );
   }

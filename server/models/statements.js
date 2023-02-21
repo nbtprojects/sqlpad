@@ -219,6 +219,7 @@ class Statements {
       stopTime,
       durationMs,
       rowCount,
+      affectedRows: queryResult.affectedRows,
       columns: queryResult.columns,
       resultsPath,
       incomplete: queryResult.incomplete,

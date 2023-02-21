@@ -132,6 +132,9 @@ async function up(queryInterface, config, appLog) {
     incomplete: {
       type: Sequelize.BOOLEAN,
     },
+    affected_rows: {
+      type: Sequelize.INTEGER,
+    },
     error: {
       type: Sequelize.JSON,
     },

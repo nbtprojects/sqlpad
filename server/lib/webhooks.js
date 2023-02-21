@@ -176,7 +176,7 @@ class Webhooks {
     return this.send('statement_created', url, body);
   }
 
-  async statementFinished(user, connection, batch, statementId) {
+  async statementFinished(user, connection, batch, statementId, customResults) {
     const url = this.hookEnabledUrl('webhookStatementFinishedUrl');
     if (!url) {
       return;
@@ -196,6 +196,7 @@ class Webhooks {
         user: userSummary(user),
         connection: connectionSummary(connection),
         results,
+        customResults,
       };
 
       return this.send('statement_finished', url, body);

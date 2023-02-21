@@ -407,6 +407,15 @@ export function useStatementStatus(statementId?: string) {
   });
 }
 
+export function useStatementAffectedRows(statementId?: string) {
+  return useEditorStore((s) => {
+    if (!statementId) {
+      return null;
+    }
+    return s.statements[statementId]?.affectedRows;
+  });
+}
+
 export function useStatementSequence(statementId?: string) {
   return useEditorStore((s) => {
     if (!statementId) {

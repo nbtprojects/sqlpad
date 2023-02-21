@@ -223,7 +223,7 @@ class ConnectionClient {
       throw error;
     }
 
-    let { rows, incomplete } = results;
+    let { rows, incomplete, affectedRows } = results;
 
     if (!Array.isArray(rows)) {
       appLog.warn(
@@ -238,7 +238,9 @@ class ConnectionClient {
       );
       rows = [];
     }
-
+    if (affectedRows) {
+      // rows = [`Affected rows: ${affectedRows}`];
+    }
     const columns = getColumns(rows);
     const stopTime = new Date();
     const queryRunTime = stopTime - startTime;
@@ -246,6 +248,7 @@ class ConnectionClient {
     const queryResult = {
       rows,
       columns,
+      affectedRows,
       incomplete: Boolean(incomplete),
     };
 
@@ -254,6 +257,7 @@ class ConnectionClient {
         ...queryContext,
         stopTime,
         queryRunTime,
+        affectedRows,
         rowCount: rows.length,
         incomplete: Boolean(incomplete),
       },
