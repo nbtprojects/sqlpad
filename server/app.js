@@ -50,15 +50,16 @@ async function makeApp(config, models) {
     name: 'sqlpad-web',
     // express-pino-logger logs all the headers by default
     // Removing these for now but open to adding them back in based on feedback
-    redact: {
-      paths: [
-        'req.headers',
-        'res.headers',
-        'req.remoteAddress',
-        'req.remotePort',
-      ],
-      remove: true,
-    },
+    // enable x-forwarded-for header logging
+    // redact: {
+      // paths: [
+        // 'req.headers',
+        // 'res.headers',
+        // 'req.remoteAddress',
+        // 'req.remotePort',
+      // ],
+      // remove: true,
+    // },
   });
 
   /*  Express setup
